@@ -10,24 +10,27 @@ public:
         int id;
         string titulo;
         bool habilitado;
-        bool estadoAnterior;
-        bool nuevo;
         int altura;
         Nodo* izq;
         Nodo* der;
 
-        Nodo(int id, string titulo) : id(id), titulo(titulo), habilitado(true), estadoAnterior(false), nuevo(true), altura(1), izq(NULL), der(NULL) {}
+        Nodo(int id, string titulo) : id(id), titulo(titulo), habilitado(true),  altura(1), izq(NULL), der(NULL) {}
     };
 
-    Nodo* raiz = NULL;
-    int cantidad = 0;
-    int habilitados = 0;
+    Nodo* raiz;
+    int cantidad;
+    int habilitados;
+    AVLLibro() : raiz(NULL), cantidad(0), habilitados(0) {}
 
     void ADD(int id, const string& titulo) {
-        Nodo* insertado = insertar(raiz, id, titulo);
-        if (insertado->nuevo) cantidad++;
+        bool esNuevo = false; 
+        bool estabaDeshabilitado = true;  
 
-        if (!insertado->estadoAnterior) habilitados++;
+        raiz = insertar(raiz, id, titulo, esNuevo, estabaDeshabilitado);
+        
+        if (esNuevo) cantidad++;
+
+        if (estabaDeshabilitado) habilitados++;  
     }
 
     void FIND(int id) {
@@ -38,7 +41,6 @@ public:
             if (resultado->habilitado) {
                 cout << resultado->titulo << " H" << endl;
             } else {
-                cout << "libro_no_encontrado" << endl;
                 cout << resultado->titulo << " D" << endl;
             }
         }
@@ -46,35 +48,40 @@ public:
 
 
     void TOGGLE(int id) {
-        Nodo* resultado = habilitarDeshabilitar(raiz, id);
+        Nodo* resultado = buscar(raiz, id);
         if (resultado == NULL) {
             cout << "libro_no_encontrado" << endl;
         } else {
-            if (resultado->estadoAnterior) {
+            if (resultado->habilitado) {
+                resultado->habilitado = false;
                 habilitados--;
-            } else {
+            } else { 
+                resultado->habilitado = true;
                 habilitados++;
             }
         }
     }
 
-    void COUNT(){
+    void COUNT() {
         cout << cantidad << " " << habilitados << " " << (cantidad - habilitados) << endl;
     }
 
 private:
-    Nodo* insertar(Nodo* nodo, int id, const string& titulo) {
-        if (nodo == NULL) return new Nodo(id, titulo);
+    Nodo* insertar(Nodo* nodo, int id, const string& titulo, bool &esNuevo, bool &estabaDeshabilitado) {
+        if (nodo == NULL) {
+            esNuevo = true;  
+            return new Nodo(id, titulo);
+        }
 
         if (id < nodo->id) {
-            nodo->izq = insertar(nodo->izq, id, titulo);
+            nodo->izq = insertar(nodo->izq, id, titulo, esNuevo, estabaDeshabilitado);
         } else if (id > nodo->id) {
-            nodo->der = insertar(nodo->der, id, titulo);
+            nodo->der = insertar(nodo->der, id, titulo, esNuevo, estabaDeshabilitado);
         } else {
             nodo->titulo = titulo;
-            nodo->estadoAnterior = nodo->habilitado;
+            estabaDeshabilitado = !nodo->habilitado;  
             nodo->habilitado = true;
-            nodo->nuevo = false;
+            esNuevo = false; 
         }
 
         nodo->altura = 1 + max(altura(nodo->izq), altura(nodo->der));
@@ -134,28 +141,14 @@ private:
         return nuevaRaiz;
     }
 
-    Nodo* buscar(Nodo* nodo, int id){
-        if(nodo == NULL) return NULL;
+    Nodo* buscar(Nodo* nodo, int id) {
+        if (nodo == NULL) return NULL;
 
         if (id < nodo->id) {
             return buscar(nodo->izq, id);
         } else if (id > nodo->id) {
             return buscar(nodo->der, id);
         } else {
-            return nodo;
-        }
-    }
-
-    Nodo* habilitarDeshabilitar(Nodo* nodo, int id){
-        if(nodo == NULL) return NULL;
-
-        if (id < nodo->id) {
-            return habilitarDeshabilitar(nodo->izq, id);
-        } else if (id > nodo->id) {
-            return habilitarDeshabilitar(nodo->der, id);
-        } else {
-            nodo->estadoAnterior = nodo->habilitado;
-            nodo->habilitado = !nodo->habilitado;
             return nodo;
         }
     }
