@@ -3,7 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <limits>
-#include "C:/Users/lauta/OneDrive - Facultad de Ingenieria - Universidad ORT Uruguay/Documentos/Algoritmos 2/Obli-Alg2/tads/AVLLibro.cpp"
+#include "tads/AVLLibro.cpp"
 
 using namespace std;
 

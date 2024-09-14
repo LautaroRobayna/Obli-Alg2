@@ -1,5 +1,5 @@
 #include <iostream>
-#include "C:/Users/lauta/OneDrive - Facultad de Ingenieria - Universidad ORT Uruguay/Documentos/Algoritmos 2/Obli-Alg2/funciones/enteros.cpp"
+#include "../funciones/enteros.cpp"
 using namespace std;
 // Usé este como guia, tambien usé el de la ppt. https://github.com/Ekan5h/AVLtree/blob/master/AVL.cpp
 
