@@ -11,51 +11,56 @@ class HashLibro {
             int id;
             string titulo; 
             bool habilitado;
-            bool susuki;
+            
             NodoHash() {
-            id = -1;
-            titulo = "";
-            habilitado = false;
-            susuki = false;
-        }
+                id = -1;
+                titulo = "";
+                habilitado = false;
+            }
 
             NodoHash(int id, string titulo){
                 this->id = id;
                 this->titulo = titulo;
                 habilitado = true;
-                susuki = true;
             }
         };
 
-        NodoHash* lista;
+        NodoHash** lista;
         int largo;
         int cantidad;
         int habilitados;
         int desabilitados;
 
 
-        int hash1(int key) {
-            key = ((key >> 16) ^ key) * 0x45d9f3b;
-            key = ((key >> 16) ^ key) * 0x45d9f3b;
-            key = (key >> 16) ^ key;
-            return key % largo;
+       int hash1(int k) {
+            string key = to_string(k);
+            long long h = 0;
+            for (int i = 0; i < key.length(); i++)
+                h = ((31 * h)%largo + int(key[i]))%largo;
+            return (h + largo)%largo;
         }
 
-        int hash2(int key) {
-            key = ((key >> 16) ^ key) * 0x119de1f3;
-            key = ((key >> 16) ^ key) * 0x119de1f3;
-            key = (key >> 16) ^ key;
-            return (key % largo) | 1; 
+        
+
+        int hash2(int k) {
+
+            string key = to_string(k);
+            long long h = 0;
+            for (int i = 0; i < key.length(); i++)
+                h = ((37 * h)%largo + int(key[i]))%largo;
+            return (h+largo)%largo;
         }
 
         HashLibro(int n){
             if(n < 28){
-                lista = new NodoHash[53];
                 largo = 53;  
             } else {
                 n = primoSup(2*n);
-                lista = new NodoHash[n];
                 largo = n;
+            }
+            lista = new NodoHash*[largo];
+            for (int i = 0; i < largo; i++) {
+                lista[i] = NULL;  // Inicializa cada posición a NULL
             }
             cantidad = 0;
             habilitados = 0;
@@ -63,23 +68,23 @@ class HashLibro {
         };
 
         void insertar(int id, string nombre){
-            NodoHash libro(id, nombre);
+            NodoHash* libro = new NodoHash(id, nombre);
             int h1 = hash1(id);
             int h2 = hash2(id);
             int pos = h1;
             int i = 0;
-            while(lista[pos].susuki){
-                if(lista[pos].id == id) {
-                    lista[pos].titulo = nombre;
-                    if(!lista[pos].habilitado){
-                        lista[pos].habilitado = true;
+            while(lista[pos] != NULL){
+                if(lista[pos]->id == id) {
+                    lista[pos]->titulo = nombre;
+                    if(!lista[pos]->habilitado){
+                        lista[pos]->habilitado = true;
                         habilitados++;
                         desabilitados--;
                     }
                     return;
                 }
                 i++;
-                pos = (h1 + h2*i )% largo;
+                pos = (h1 + (h2*i)%largo )% largo;
             }
             lista[pos] = libro;
             cantidad++;
@@ -92,24 +97,24 @@ class HashLibro {
             int h2 = hash2(id);
             int pos = h1;
             int i = 0;
-            while(lista[pos].susuki){
-                if(lista[pos].id == id){
-                    if(lista[pos].habilitado){
+            while(lista[pos] != NULL){
+                if(lista[pos]->id == id){
+                    if(lista[pos]->habilitado){
                         habilitados--;
                         desabilitados++;
                     } else {
                         desabilitados--;
                         habilitados++;
                     }
-                    lista[pos].habilitado = !lista[pos].habilitado;
+                    lista[pos]->habilitado = !lista[pos]->habilitado;
                     return true;
                 }
                 i++;
-                pos = ( h1 + i*h2 ) % largo;
+                pos = ( h1 + (i*h2)%largo ) % largo;
             }
             return false;
         }
-
+        
         
         pair<string, bool> buscar(int id){
 
@@ -117,12 +122,12 @@ class HashLibro {
             int h2 = hash2(id);
             int pos = h1;
             int i = 0;
-            while(lista[pos].susuki){
-                if(lista[pos].id == id){
-                    return {lista[pos].titulo, lista[pos].habilitado};
+            while(lista[pos]!= NULL){
+                if(lista[pos]->id == id){
+                    return {lista[pos]->titulo, lista[pos]->habilitado};
                 }
                 i++;
-                pos = ( h1 + i*h2 ) % largo;
+                pos = ( h1 + (i*h2)%largo ) % largo;
             }
             return {"",false};
         }

@@ -3,14 +3,19 @@
 #include <iostream>
 #include <limits>
 #include "tads/HashLibro.cpp"
-
+#include <chrono> // Para std::chrono
 using namespace std;
 
 
 int main()
 {
+    ios_base::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    // Capturar el tiempo de inicio
+    auto start = chrono::high_resolution_clock::now();
     int t; cin>>t;
     HashLibro biblioteca(t);
+
+    
     while(t--){
 
         string comando; cin>>comando;
@@ -39,6 +44,16 @@ int main()
         } else {
             cout<<biblioteca.cantidad<<" "<<biblioteca.habilitados<<" "<<biblioteca.desabilitados<<'\n';
         }
+        
     }
+    // Capturar el tiempo de finalización
+    auto end = chrono::high_resolution_clock::now();
+
+    // Calcular la duración en segundos
+    chrono::duration<double> duration = end - start;
+    
+    // Mostrar la duración
+    //cout << "Tiempo de ejecución: " << duration.count() << " s" << endl;   
+    
     return 0;
 }

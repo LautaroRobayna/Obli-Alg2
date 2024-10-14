@@ -36,13 +36,15 @@ void compareFiles(const string& file1, const string& file2) {
 
     if (!f1.is_open()) {
         cerr << "Error opening file: " << file1 << endl;
-        return;
+        exit(1); // Detener la ejecución si no se abre el archivo
     }
     if (!f2.is_open()) {
         cerr << "Error opening file: " << file2 << endl;
-        return;
+        exit(1); // Detener la ejecución si no se abre el archivo
     }
 
+    cout << "File 1 and File 2 opened successfully." << endl;
+    
     stringstream buffer1, buffer2;
     buffer1 << f1.rdbuf();
     buffer2 << f2.rdbuf();
@@ -61,9 +63,9 @@ void compareFiles(const string& file1, const string& file2) {
             if (line1 != line2) {
                 cout << "Difference found on line " << lineNumber << ":\n";
                 cout << "File 1: ";
-                printHex(line1);
+                cout<<line1<<'\n'; // Mostrar en hexadecimal
                 cout << "File 2: ";
-                printHex(line2);
+                cout<<line2<<'\n'; // Mostrar en hexadecimal
                 return;
             }
             lineNumber++;
@@ -88,7 +90,6 @@ void compareFiles(const string& file1, const string& file2) {
 int main() {
     string file1 = "out.txt"; // Archivo a comparar
     string file2 = ".//tests//ejercicio2//1000000.out.txt"; // Archivo contra el cual comparar
-
     compareFiles(file1, file2);
 
     return 0;
