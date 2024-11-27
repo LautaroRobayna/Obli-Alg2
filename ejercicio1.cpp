@@ -1,41 +1,47 @@
-#include <cassert>
-#include <string>
 #include <iostream>
-#include <fstream>
-#include <limits>
 #include "tads/AVLLibro.cpp"
 
 using namespace std;
 
 int main() {
 
-    int N;
-    cin >> N; 
-    cin.ignore();  // Ignorar el salto de línea después de leer N
-    AVLLibro* arbol = new AVLLibro();
+    int n; cin>>n;
+    AVLLibro libreria;
 
-    for (int i = 0; i < N; ++i) {
-        string operacion;
-        cin >> operacion;
+    while(n--){
+        string comando; cin>>comando;
+        if(comando == "ADD"){
 
-        if (operacion == "ADD") {
-            int id;
-            string titulo;
-            cin >> id >> titulo;
-            arbol->ADD(id, titulo);
-        } 
-        else if (operacion == "FIND") {
-            int id;
-            cin >> id;
-            arbol->FIND(id);
-        } 
-        else if (operacion == "TOGGLE") {
-            int id;
-            cin >> id;
-            arbol->TOGGLE(id);
-        } 
-        else if (operacion == "COUNT") {
-            arbol->COUNT();
+            int id; string titulo; cin>>id>>titulo;
+
+            libreria.insertar(id, titulo);
+
+        } else if(comando == "FIND"){
+
+            int id; cin>>id;
+            NodoLibro* nodo = libreria.buscar(id);
+
+            if(nodo){
+                cout<<nodo->titulo<<(nodo->habilitado? " H\n" : " D\n");
+            } else {
+                cout<<"libro_no_encontrado"<<'\n';
+            }
+
+        } else if(comando == "TOGGLE"){
+
+            int id; cin>>id;
+            NodoLibro* nodo = libreria.buscar(id);
+
+            if(nodo){
+                libreria.desabilitar(id);
+            } else {
+                cout<<"libro_no_encontrado"<<'\n';
+            }
+
+        } else { //comando == "COUNT"
+
+            cout<<libreria.cantidadLibros<<" "<<libreria.habilitados<<" "<<libreria.desabilitados<<'\n';
+            
         }
     }
 

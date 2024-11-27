@@ -1,5 +1,6 @@
 #include <iostream>
 #include "../funciones/enteros.cpp"
+#include "Par.cpp"
 using namespace std;
 
 
@@ -116,7 +117,7 @@ class HashLibro {
         }
         
         
-        pair<string, bool> buscar(int id){
+        Par<string, bool> buscar(int id){
 
             int h1 = hash1(id);
             int h2 = hash2(id);

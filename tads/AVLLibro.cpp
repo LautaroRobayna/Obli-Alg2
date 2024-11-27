@@ -1,155 +1,160 @@
 #include <iostream>
 #include "../funciones/enteros.cpp"
 using namespace std;
-// Usé este como guia, tambien usé el de la ppt. https://github.com/Ekan5h/AVLtree/blob/master/AVL.cpp
 
-class AVLLibro {
+class NodoLibro {
+
 public:
-    class Nodo {
-    public:
-        int id;
-        string titulo;
-        bool habilitado;
-        int altura;
-        Nodo* izq;
-        Nodo* der;
+    
+    int id;
+    int altura;
+    string titulo;
+    bool habilitado;
+    NodoLibro* izq;
+    NodoLibro* der;
+    NodoLibro(int id, string titulo) {
+        this->id = id;
+        this->titulo = titulo;
+        this->altura = 1;
+        habilitado = true;
+        this->izq = NULL;
+        this->der = NULL;
+    }
+};
+class AVLLibro {
 
-        Nodo(int id, string titulo) : id(id), titulo(titulo), habilitado(true),  altura(1), izq(NULL), der(NULL) {}
-    };
+public:
 
-    Nodo* raiz;
-    int cantidad;
+    NodoLibro* raiz;
+    int cantidadLibros;
     int habilitados;
-    AVLLibro() : raiz(NULL), cantidad(0), habilitados(0) {}
+    int desabilitados;
 
-    void ADD(int id, const string& titulo) {
-        bool esNuevo = false; 
-        bool estabaDeshabilitado = true;  
-
-        raiz = insertar(raiz, id, titulo, esNuevo, estabaDeshabilitado);
-        
-        if (esNuevo) cantidad++;
-
-        if (estabaDeshabilitado) habilitados++;  
+    AVLLibro(){
+        raiz = NULL;
+        cantidadLibros = 0;
+        habilitados = 0;
+        desabilitados = 0;
     }
 
-    void FIND(int id) {
-        Nodo* resultado = buscar(raiz, id);  
-        if (resultado == NULL) {
-            cout << "libro_no_encontrado" << endl;
-        } else {
-            if (resultado->habilitado) {
-                cout << resultado->titulo << " H" << endl;
-            } else {
-                cout << resultado->titulo << " D" << endl;
-            }
+    int altura(NodoLibro* nodo){
+        return nodo ? nodo->altura : 0;
+    }
+
+    void actualizarAltura(NodoLibro* nodo){
+        if(nodo){
+            nodo->altura = 1 + max(altura(nodo->izq), altura(nodo->der));
         }
     }
 
-
-    void TOGGLE(int id) {
-        Nodo* resultado = buscar(raiz, id);
-        if (resultado == NULL) {
-            cout << "libro_no_encontrado" << endl;
-        } else {
-            if (resultado->habilitado) {
-                resultado->habilitado = false;
-                habilitados--;
-            } else { 
-                resultado->habilitado = true;
-                habilitados++;
-            }
-        }
+    void insertar(int id, string titulo){
+        insertar(raiz, id, titulo);
     }
 
-    void COUNT() {
-        cout << cantidad << " " << habilitados << " " << (cantidad - habilitados) << endl;
+    int calcularBalance(NodoLibro* nodo){
+        return nodo? altura(nodo->izq) - altura(nodo->der) : 0;
     }
 
-private:
-    Nodo* insertar(Nodo* nodo, int id, const string& titulo, bool &esNuevo, bool &estabaDeshabilitado) {
-        if (nodo == NULL) {
-            esNuevo = true;  
-            return new Nodo(id, titulo);
-        }
+    void insertar(NodoLibro* &nodo, int id, string titulo){
 
-        if (id < nodo->id) {
-            nodo->izq = insertar(nodo->izq, id, titulo, esNuevo, estabaDeshabilitado);
-        } else if (id > nodo->id) {
-            nodo->der = insertar(nodo->der, id, titulo, esNuevo, estabaDeshabilitado);
-        } else {
+        if(!nodo){
+
+            nodo = new NodoLibro(id, titulo);
+            habilitados++;
+            cantidadLibros++;
+            return;
+
+        } else if(id == nodo->id){
+
             nodo->titulo = titulo;
-            estabaDeshabilitado = !nodo->habilitado;  
+            if(!nodo->habilitado){
+                habilitados++;
+                desabilitados--;
+            }
             nodo->habilitado = true;
-            esNuevo = false; 
-        }
+            return;
 
-        nodo->altura = 1 + max(altura(nodo->izq), altura(nodo->der));
+        } 
+        
+        if(id < nodo->id){
 
-        int balance = getBalance(nodo);
-        if (balance > 1 && id < nodo->izq->id) {
-            return rotacionDer(nodo);
-        }
-        if (balance < -1 && id > nodo->der->id) {
-            return rotacionIzq(nodo);
-        }
-        if (balance > 1 && id > nodo->izq->id) {
-            nodo->izq = rotacionIzq(nodo->izq);
-            return rotacionDer(nodo);
-        }
-        if (balance < -1 && id < nodo->der->id) {
-            nodo->der = rotacionDer(nodo->der);
-            return rotacionIzq(nodo);
-        }
+            insertar(nodo->izq, id, titulo);
 
-        return nodo;
-    }
-
-    int altura(Nodo* nodo) {
-        if (nodo == NULL)
-            return 0;
-        return nodo->altura;
-    }
-
-    int getBalance(Nodo* nodo) {
-        if (nodo == NULL)
-            return 0;
-        return altura(nodo->izq) - altura(nodo->der);
-    }
-
-    Nodo* rotacionIzq(Nodo* nodo) {
-        Nodo* nuevaRaiz = nodo->der;
-        Nodo* temp = nuevaRaiz->izq;
-        nuevaRaiz->izq = nodo;
-        nodo->der = temp;
-
-        nodo->altura = max(altura(nodo->izq), altura(nodo->der)) + 1;
-        nuevaRaiz->altura = max(altura(nuevaRaiz->izq), altura(nuevaRaiz->der)) + 1;
-
-        return nuevaRaiz;
-    }
-
-    Nodo* rotacionDer(Nodo* nodo) {
-        Nodo* nuevaRaiz = nodo->izq;
-        Nodo* temp = nuevaRaiz->der;
-        nuevaRaiz->der = nodo;
-        nodo->izq = temp;
-
-        nodo->altura = max(altura(nodo->izq), altura(nodo->der)) + 1;
-        nuevaRaiz->altura = max(altura(nuevaRaiz->izq), altura(nuevaRaiz->der)) + 1;
-
-        return nuevaRaiz;
-    }
-
-    Nodo* buscar(Nodo* nodo, int id) {
-        if (nodo == NULL) return NULL;
-
-        if (id < nodo->id) {
-            return buscar(nodo->izq, id);
-        } else if (id > nodo->id) {
-            return buscar(nodo->der, id);
         } else {
+
+            insertar(nodo->der, id, titulo);
+        } 
+        
+        actualizarAltura(nodo);
+
+        int balance = calcularBalance(nodo);
+
+        if(balance > 1){
+            if(id < nodo->izq->id){
+                rotacionLL(nodo);
+            } else {
+                rotacionRR(nodo->izq);
+                rotacionLL(nodo);
+            }
+            
+        } else if(balance < -1){
+            if(id > nodo->der->id){
+                rotacionRR(nodo);
+            } else {
+                rotacionLL(nodo->der);
+                rotacionRR(nodo);
+            }
+        }
+    }
+
+    void rotacionLL(NodoLibro* &nodo) {
+        NodoLibro* temp = nodo->izq;
+        nodo->izq = temp->der;
+        temp->der = nodo;
+
+        actualizarAltura(nodo);
+        actualizarAltura(temp);
+
+        nodo = temp;
+    }
+    void rotacionRR(NodoLibro* &nodo){
+        NodoLibro* temp = nodo->der;
+        nodo->der = temp->izq;
+        temp->izq = nodo;
+
+        actualizarAltura(nodo);
+        actualizarAltura(temp);
+
+        nodo = temp;
+    }
+
+    NodoLibro* buscar(int id){
+        return buscar(raiz, id);
+    }
+
+    NodoLibro* buscar(NodoLibro* nodo, int id){
+        if(!nodo || nodo->id == id){
             return nodo;
+        }
+
+        if(id < nodo->id){
+            return buscar(nodo->izq, id);
+        } else {
+            return buscar(nodo->der, id);
+        }
+    }
+
+    void desabilitar(int id){
+        NodoLibro* nodo = buscar(id);
+        if(nodo){
+            if(nodo->habilitado){
+                habilitados--;
+                desabilitados++;
+            } else {
+                habilitados++;
+                desabilitados--;
+            }
+            nodo->habilitado = !nodo->habilitado;
         }
     }
 };
