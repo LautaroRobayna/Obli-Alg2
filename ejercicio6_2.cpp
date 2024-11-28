@@ -6,56 +6,77 @@
 
 using namespace std;
 Par<ListImp<int>, ListImp<int>> dijkstra(int n, int src, ListImp<Par<int, int>>* G) {
-    const int INF = 1e9; 
-    ListImp<int> dist;
-    ListImp<int> parent;
+    const int INF = 1e9;
 
-    // Inicializamos dist y parent desde 0 hasta n
+    // Arreglos para distancias y padres
+    int* dist = new int[n + 1];
+    int* parent = new int[n + 1];
+    bool* inHeap = new bool[n + 1];
+
+    // Inicializamos distancias y padres
     for (int i = 0; i <= n; i++) {
-        dist.insert(INF);
-        parent.insert(-1);
+        dist[i] = INF;
+        parent[i] = -1;
+        inHeap[i] = false;
     }
 
-    // Ajustar si los nodos comienzan desde 1
-    if (src < 1 || src > n) {
-        cout << "Nodo fuente fuera de rango: " << src << endl;
-        return {dist, parent};
-    }
+    dist[src] = 0;
 
-    dist.set(src, 0);
+    // Creamos el MinHeap
     MinHeap heap(n + 1);
-    heap.insert(src, 0);
+    heap.insert(src, dist[src]);
+    inHeap[src] = true;
 
-    while (heap.size != 0) {
+    while (!heap.isEmpty()) {
         Nodo* current = heap.extractMin();
         if (current == nullptr) break;
         int u = current->key;
         int d = current->value;
-        // No acceder a current después de extractMin()
-        // delete current; // Si es necesario, elimina el nodo aquí
+        delete current; // Liberamos el nodo extraído
 
-        if (u < 1 || u > n) continue;
+        inHeap[u] = false;
 
-        if (d > dist.get(u)) continue;
+        // Si la distancia en el heap es mayor, ignoramos el nodo
+        if (d > dist[u]) continue;
 
+        // Recorremos los vecinos de u
         ListImp<Par<int, int>>& adj = G[u];
         for (int i = 0; i < adj.getSize(); i++) {
             Par<int, int> edge = adj.get(i);
             int v = edge.primero;
             int weight = edge.segundo;
 
-            if (v < 1 || v > n) continue;
-
-            if (dist.get(u) + weight < dist.get(v)) {
-                dist.set(v, dist.get(u) + weight);
-                parent.set(v, u);
-                heap.insert(v, dist.get(v));
+            if (dist[u] + weight < dist[v]) {
+                dist[v] = dist[u] + weight;
+                parent[v] = u;
+                if (!inHeap[v]) {
+                    heap.insert(v, dist[v]);
+                    inHeap[v] = true;
+                } else {
+                    // Actualizar el valor en el heap
+                    heap.decreaseKey(v, dist[v]);
+                }
             }
         }
     }
 
-    return {dist, parent};
+    // Convertimos los arreglos a ListImp<int> antes de devolverlos
+    ListImp<int> distList;
+    ListImp<int> parentList;
+    for (int i = 0; i <= n; i++) {
+        distList.insert(dist[i]);
+        parentList.insert(parent[i]);
+    }
+
+    // Liberamos la memoria de los arreglos
+    delete[] dist;
+    delete[] parent;
+    delete[] inHeap;
+
+    return {distList, parentList};
 }
+
+
 
 
 

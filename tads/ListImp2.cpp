@@ -14,7 +14,7 @@ private:
         T element;
         Node *next;
         Node *previous;
-        Node(T element, Node *next, Node *previous) : element(element), next(next), previous(previous) {}
+        Node(const T& element, Node *next = nullptr, Node *previous = nullptr) : element(element), next(next), previous(previous) {}
     };
 
     Node *head;
@@ -22,12 +22,13 @@ private:
     int size;
 
 public:
-    ListImp() : head(NULL), tail(NULL), size(0) {}
+    // Constructor por defecto
+    ListImp() : head(nullptr), tail(nullptr), size(0) {}
 
     // Constructor de copia
-    ListImp(const ListImp<T>& other) : head(NULL), tail(NULL), size(0) {
+    ListImp(const ListImp<T>& other) : head(nullptr), tail(nullptr), size(0) {
         Node* current = other.head;
-        while (current != NULL) {
+        while (current != nullptr) {
             insert(current->element);
             current = current->next;
         }
@@ -38,7 +39,7 @@ public:
         if (this != &other) {
             clear();
             Node* current = other.head;
-            while (current != NULL) {
+            while (current != nullptr) {
                 insert(current->element);
                 current = current->next;
             }
@@ -51,31 +52,34 @@ public:
         clear();
     }
 
+    // Limpia la lista
     void clear() {
         Node* current = head;
-        while (current != NULL) {
+        while (current != nullptr) {
             Node* nextNode = current->next;
             delete current;
             current = nextNode;
         }
-        head = tail = NULL;
+        head = tail = nullptr;
         size = 0;
     }
 
-    // Resto de métodos (insert, insertAt, get, set, etc.)
-    // ...
+    // Verifica si la lista está vacía
+    bool isEmpty() const {
+        return head == nullptr;
+    }
+
+    // Devuelve el tamaño de la lista
+    int getSize() const {
+        return size;
+    }
 
     // Inserta un elemento al final de la lista
-    void insert(T element)
-    {
-        Node *newNode = new Node(element, NULL, tail);
-        if (isEmpty())
-        {
-            head = newNode;
-            tail = newNode;
-        }
-        else
-        {
+    void insert(const T& element) {
+        Node* newNode = new Node(element, nullptr, tail);
+        if (isEmpty()) {
+            head = tail = newNode;
+        } else {
             tail->next = newNode;
             tail = newNode;
         }
@@ -83,40 +87,30 @@ public:
     }
 
     // Inserta un elemento en una posición específica
-    void insertAt(int index, T element)
-    {
+    void insertAt(int index, const T& element) {
         assert(index >= 0 && index <= size);
-        Node *newNode = new Node(element, NULL, NULL);
-        if (index == 0)
-        {
-            if (head != NULL)
-            {
-                newNode->next = head;
+        if (index == size) {
+            insert(element);
+            return;
+        }
+        Node* newNode = new Node(element);
+        if (index == 0) {
+            newNode->next = head;
+            if (head != nullptr) {
                 head->previous = newNode;
             }
             head = newNode;
-            if (tail == NULL) // Si la lista estaba vacía
-            {
+            if (tail == nullptr) {
                 tail = newNode;
             }
-        }
-        else if (index == size)
-        {
-            tail->next = newNode;
-            newNode->previous = tail;
-            tail = newNode;
-        }
-        else
-        {
-            Node *current = head;
-            for (int i = 0; i < index; i++)
-            {
+        } else {
+            Node* current = head;
+            for (int i = 0; i < index; i++) {
                 current = current->next;
             }
             newNode->next = current;
             newNode->previous = current->previous;
-            if (current->previous != NULL)
-            {
+            if (current->previous != nullptr) {
                 current->previous->next = newNode;
             }
             current->previous = newNode;
@@ -125,41 +119,44 @@ public:
     }
 
     // Modifica el elemento en una posición específica
-    void set(int index, T element) {
+    void set(int index, const T& element) {
         assert(index >= 0 && index < size);
-        Node *current = head;
-        for (int i = 0; i < index; i++)
-        {
-            current = current->next;
-        }
+        Node* current = getNodeAt(index);
         current->element = element;
     }
 
-    // Verifica si la lista está vacía
-    bool isEmpty()
-    {
-        return head == NULL;
-    }
-
     // Obtiene el elemento en una posición específica
-    T& get(int index)
-    {
+    T& get(int index) {
         assert(index >= 0 && index < size);
-        Node *current = head;
-        for (int i = 0; i < index; i++)
-        {
-            current = current->next;
-        }
+        Node* current = getNodeAt(index);
         return current->element;
     }
 
-    // Devuelve el tamaño de la lista
-    int getSize()
-    {
-        return size;
+    // Obtiene el elemento en una posición específica (constante)
+    const T& get(int index) const {
+        assert(index >= 0 && index < size);
+        Node* current = getNodeAt(index);
+        return current->element;
     }
 
-    // Otros métodos si es necesario...
+private:
+    // Método auxiliar para obtener el nodo en una posición específica
+    Node* getNodeAt(int index) const {
+        assert(index >= 0 && index < size);
+        Node* current;
+        if (index < size / 2) {
+            current = head;
+            for (int i = 0; i < index; i++) {
+                current = current->next;
+            }
+        } else {
+            current = tail;
+            for (int i = size - 1; i > index; i--) {
+                current = current->previous;
+            }
+        }
+        return current;
+    }
 };
 
 #endif

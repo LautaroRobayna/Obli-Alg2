@@ -1,24 +1,3 @@
-Heap está lleno
-Heap está lleno
-Heap está lleno
-Heap está lleno
-Heap está lleno
-Heap está lleno
-Heap está lleno
-Heap está lleno
-Heap está lleno
-Heap está lleno
-Heap está lleno
-Heap está lleno
-Heap está lleno
-Heap está lleno
-Heap está lleno
-Heap está lleno
-Heap está lleno
-Heap está lleno
-Heap está lleno
-Heap está lleno
-Heap está lleno
 BE11, la mejor ruta es Desactivar la Entidad, buscar equipo y punto de extraccion con un costo de 148
 La otra opcion tiene un costo de 148
 Paso 1: Nueva_York -> Canelones -> Hong_Kong -> Desactivar la Entidad

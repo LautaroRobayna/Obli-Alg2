@@ -12,33 +12,66 @@ const ll INF = numeric_limits<ll>::max();  // Infinito, para representar distanc
 
 vector<vector<ll>> G;  // Grafo representado como matriz de adyacencia
 
-pair<vector<ll>, vector<int>> dijkstra(int n, int src) {
-    vector<ll> dist(n + 1, INF);  // Distancias inicializadas a infinito
-    vector<int> pred(n + 1, -1); // Predecesores para reconstruir el camino
-    vector<bool> visited(n + 1, false); // Para marcar nodos visitados
-    dist[src] = 0;  // La distancia al nodo de origen es 0
+Par<ListImp<int>, ListImp<int>> dijkstra(int n, int src, ListImp<Par<int, int>>* G) {
+    const int INF = 1e9;
 
-    for (int i = 1; i <= n; i++) {
-        ll u = -1;
-        for (int j = 1; j <= n; j++) {
-            if (!visited[j] && (u == -1 || dist[j] < dist[u])) {
-                u = j;
-            }
-        }
+    // Utilizamos arreglos para distancias, padres y visitados
+    int* dist = new int[n + 1];
+    int* parent = new int[n + 1];
+    bool* visited = new bool[n + 1];
 
-        if (u == -1 || dist[u] == INF) break;  // No quedan nodos alcanzables
+    // Inicializamos los arreglos
+    for (int i = 0; i <= n; i++) {
+        dist[i] = INF;
+        parent[i] = -1;
+        visited[i] = false;
+    }
+
+    dist[src] = 0;
+
+    MinHeap heap(n + 1);
+    heap.insert(src, 0);
+
+    while (!heap.isEmpty()) {
+        Nodo* current = heap.extractMin();
+        if (current == nullptr) break;
+        int u = current->key;
+        int d = current->value;
+        delete current; // Liberamos el nodo después de usarlo
+
+        if (visited[u]) continue;
         visited[u] = true;
 
-        for (int v = 1; v <= n; v++) {
-            if (G[u][v] != INF && dist[u] + G[u][v] < dist[v]) {
-                dist[v] = dist[u] + G[u][v];
-                pred[v] = u;
+        ListImp<Par<int, int>>& adj = G[u];
+        for (int i = 0; i < adj.getSize(); i++) {
+            Par<int, int> edge = adj.get(i);
+            int v = edge.primero;
+            int weight = edge.segundo;
+
+            if (dist[u] + weight < dist[v]) {
+                dist[v] = dist[u] + weight;
+                parent[v] = u;
+                heap.insert(v, dist[v]);
             }
         }
     }
 
-    return {dist, pred};
+    // Convertimos los arreglos a ListImp<int> antes de devolverlos
+    ListImp<int> distList;
+    ListImp<int> parentList;
+    for (int i = 0; i <= n; i++) {
+        distList.insert(dist[i]);
+        parentList.insert(parent[i]);
+    }
+
+    // Liberamos la memoria de los arreglos
+    delete[] dist;
+    delete[] parent;
+    delete[] visited;
+
+    return Par<ListImp<int>, ListImp<int>>(distList, parentList);
 }
+
 
 void duplicar(vector<int> path) {
     if (path.empty()) return;  // Verificar que el camino no esté vacío
