@@ -9,11 +9,11 @@ class NodoMueble{
         this->precio = precio;
     }
 };
-int const oo = 9999999;
+
 class HeapMuebles{
 public:
     
-
+    int const oo = 9999999;
     int largo;
     int cantidad;
     NodoMueble** heap;

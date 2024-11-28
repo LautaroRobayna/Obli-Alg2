@@ -4,11 +4,10 @@
 #include "tads/Par.cpp"
 
 using namespace std;
-typedef long long ll;
 
-bool divisionPosible(ll n, ll k, ll *lista, ll valorMaximo){
-    ll usados = 1;
-    ll valorActual = 0;
+bool divisionPosible(int n, int k, int *lista, int valorMaximo){
+    int usados = 1;
+    int valorActual = 0;
     for(int i = 0 ; i < n; i++){
         if(valorActual + lista[i] > valorMaximo){
             usados++;
@@ -23,12 +22,12 @@ bool divisionPosible(ll n, ll k, ll *lista, ll valorMaximo){
 
 int main()
 {
-    ll n, k; cin>>n;
-    ll sumaTotal = 0;
-    ll* lista = new ll[n];
+    int n, k; cin>>n;
+    int sumaTotal = 0;
+    int* lista = new int[n];
 
-    ll bajo = 0;
-    ll alto = 0;
+    int bajo = 0;
+    int alto = 0;
     for(int i = 0; i < n; i++){
         cin>>lista[i];
         sumaTotal += lista[i];
@@ -36,10 +35,10 @@ int main()
     }
     alto = sumaTotal;
     cin>>k;
-    ll resultado = alto;
+    int resultado = alto;
 
     while(bajo <= alto){
-        ll mid = (bajo+alto)/2;
+        int mid = (bajo+alto)/2;
         if(divisionPosible(n,k,lista,mid)){
             resultado = mid;
             alto = mid - 1;
@@ -48,8 +47,8 @@ int main()
         }
     }
 
-    ll acumulado = 0;
-    ll estudianteN = 0;
+    int acumulado = 0;
+    int estudianteN = 0;
     int* acum = new int[k];
 
     for(int i = 0; i < k; i++){

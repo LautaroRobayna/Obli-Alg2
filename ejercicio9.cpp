@@ -5,9 +5,10 @@
 
 using namespace std;
 
-const int INF = 1e9; // A large positive number
+
 
 int main() {
+    const int INF = 1e9;
     int n; cin >> n;
     int *playersCuality = new int[n+1];
     int *playersPrice = new int[n+1];
@@ -55,13 +56,12 @@ int main() {
             for (int g = 0; g <= money; g++) {
                 dp[i][j][g] = new int[E+1];
                 for (int e = 0; e <= E; e++) {
-                    dp[i][j][g][e] = -INF;
+                    dp[i][j][g][e] = 0;
                 }
             }
         }
     }
 
-    dp[0][0][0][0] = 0;
 
     // DP computation
     for (int i = 1; i <= n; i++) {
@@ -80,20 +80,16 @@ int main() {
     }
 
     // Calculate result
-    int maxValuation = -INF;
-    for (int g = 0; g <= money; g++) {
-        for (int e = 0; e <= E; e++) {
-            if (dp[n][11][g][e] > maxValuation) {
-                maxValuation = dp[n][11][g][e];
-            }
+    int maxValuation = 0;
+    for (int e = 0; e <= E; e++) {
+        if (dp[n][11][money][e] > maxValuation) {
+            maxValuation = dp[n][11][money][e];
         }
     }
-
-    if (maxValuation < 0) {
-        cout << "No es posible seleccionar 11 jugadores dentro del presupuesto y límite de extranjeros." << endl;
-    } else {
-        cout << maxValuation / 11 << endl;
-    }
+    
+    
+    cout << maxValuation / 11 << endl;
+    
 
     return 0;
 }

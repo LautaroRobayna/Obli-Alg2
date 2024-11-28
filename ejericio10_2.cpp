@@ -1,6 +1,7 @@
 #include <cassert>
 #include <string>
 #include <iostream>
+#include <limits>
 #include "tads/ListImp.cpp"
 #include "funciones/enteros.cpp"
 
