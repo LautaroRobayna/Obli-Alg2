@@ -72,6 +72,15 @@ public:
         size++;
     }
 
+    void set(int index, T element) {
+        assert(index >= 0 && index < size);
+        Node *current = head;
+        for (int i = 0; i < index; i++) {
+            current = current->next;
+        }
+        current->element = element;
+    }
+
     void remove(T element)
     {
         Node *current = head;
@@ -156,6 +165,21 @@ public:
             current = current->next;
         }
         return current->element;
+    }
+
+    void reverse()
+    {
+        Node *current = head;
+        while (current != NULL)
+        {
+            Node *temp = current->next;
+            current->next = current->previous;
+            current->previous = temp;
+            current = temp;
+        }
+        Node *temp = head;
+        head = tail;
+        tail = temp;
     }
 
     int getSize()

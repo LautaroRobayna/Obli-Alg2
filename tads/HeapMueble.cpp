@@ -59,14 +59,10 @@ class HashMueble {
             while (hash[hashPos] && !hash[hashPos]->dirty) {
                 j++;
                 if (hash[hashPos]->id == id && hash[hashPos]->price > price) {
-                    // Actualiza el precio si ya existe el objeto en el hash
                     hash[hashPos]->price = price;
                     return;
                 }
                 hashPos = abs(hash1(id) + j * hash2(id)) % largeArray;
-            }
-            if (hash[hashPos]) {
-                delete hash[hashPos];
             }
             hash[hashPos] = new Node(id, price);
             amount++;
@@ -82,7 +78,6 @@ class HashMueble {
             Node* toDelete = heap[0];
             heap[0] = heap[--heapSize];
             heap[heapSize] = NULL;
-            delete toDelete;
             sink(0);
         }
 
@@ -90,29 +85,34 @@ class HashMueble {
             return heap[0];
         }
 
-        void sink(int i) {
-            int left = 2 * i + 1;
-            int right = 2 * i + 2;
-            int smallest = i;
+        void sink(int index) {
+            int left = 2 * index + 1;
+            int right = 2 * index + 2;
+            int smallest = index;
 
-            if (left < heapSize){
+            // Comparar con el hijo izquierdo
+            if (left < heapSize && heap[left]->price < heap[smallest]->price) {
                 smallest = left;
-                if (right < heapSize && heap[right]->price < heap[smallest]->price){
-                    smallest = right;
-                }
-                if (heap[smallest]->price < heap[i]->price || heap[smallest]->price == heap[i]->price && heap[smallest]->id < heap[i]->id){ 
-                    swap(i, smallest);
-                    sink(smallest);
-                }
+            }
+
+            // Comparar con el hijo derecho
+            if (right < heapSize && heap[right]->price < heap[smallest]->price) {
+                smallest = right;
+            }
+
+            // Si el elemento más pequeño no es el actual, intercambia y repite el proceso
+            if (smallest != index) {
+                swap(heap[index], heap[smallest]);
+                sink(smallest);  // Recursivamente hundir el nodo
             }
         }
 
-        void floats(int i){
-            int par = parent(i);
-            if(i > 0 && (heap[par]->price > heap[i]->price || 
-                          (heap[par]->price == heap[i]->price && heap[par]->id < heap[i]->id))){
-                swap(i, par);
-                floats(par);
+        void floats(int index) {
+            int parent = (index - 1) / 2;
+
+            if (index > 0 && heap[index]->price < heap[parent]->price) {
+                swap(heap[index], heap[parent]);
+                floats(parent);  // Recurre para verificar más arriba en el heap
             }
         }
 
@@ -120,9 +120,9 @@ class HashMueble {
             return (i - 1) / 2;
         }
 
-        void swap(int a, int b){
-            Node* aux = heap[a];
-            heap[a] = heap[b];
-            heap[b] = aux;
+        void swap(Node*& a, Node*& b) {
+            Node* aux = a;
+            a = b;
+            b = aux;
         }
 };

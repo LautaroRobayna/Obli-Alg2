@@ -2,7 +2,7 @@
 #include <string>
 #include <iostream>
 #include <limits>
-#include <tads/HashLibro.cpp>
+#include <C:/Users/lauta/OneDrive - Facultad de Ingenieria - Universidad ORT Uruguay/Documentos/Algoritmos 2/Obli-Alg2/tads/HashLibro.cpp>
 
 using namespace std;
 
